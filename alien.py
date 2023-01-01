@@ -39,6 +39,7 @@ def on_mouse_down(pos):
         set_alien_hurt()
     else:
         print("you missed me!")
+        sounds.wetfart.play()
 
 def set_alien_hurt():
     """Define behavior when alien is hurt
@@ -52,7 +53,7 @@ def set_alien_hurt():
     slimearm.image = 'alien_hurt'
     # Schedule a future event to reset the alien back to normal.
     # In one second, I think?
-    clock.schedule_unique(set_alien_normal, 1.0)
+    clock.schedule_unique(set_alien_normal, 6.0)
 
 def set_alien_normal():
     """Return alien to normal image
