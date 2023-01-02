@@ -15,7 +15,8 @@ def draw():
     """This method defines what happens when the screen refreshes
     """
     # fill the screen with purple
-    screen.fill((40, 6, 100))
+    #screen.fill((40, 6, 100))
+    screen.blit("background",(0,0))
     # draw the alien
     slimearm.draw()
 
