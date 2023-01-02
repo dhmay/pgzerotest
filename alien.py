@@ -1,5 +1,6 @@
 # import the library that knows how to run the game
 import pgzrun
+from cutscenes.cutscenes import CutSceneManager, StupidTextCutScene
 
 # make an "actor" to represent the alien. The Actor will keep
 # track of where the alien is on the screen and lots of other stuff
@@ -11,24 +12,46 @@ slimearm.topright = 0, 10
 WIDTH = 712
 HEIGHT = 508
 
+game_state_dict = {
+    "phase": "intro",
+}
+
 def draw():
     """This method defines what happens when the screen refreshes
     """
-    # fill the screen with purple
-    #screen.fill((40, 6, 100))
-    screen.blit("background",(0,0))
-    # draw the alien
-    slimearm.draw()
+    cutscene_manager = game_state_dict["cutscene_manager"]
+
+    if cutscene_manager.running_cutscene is not None:
+        cutscene = cutscene_manager.running_cutscene
+        cutscene.draw(screen)
+        if cutscene.finished:
+            cutscene_manager.running_cutscene = None
+            if game_state_dict["phase"] == "intro":
+                game_state_dict["phase"] = "game"
+    else:  # no cutscene running. Main game phase.
+        screen.blit("background",(0,0))
+        # draw the alien
+        slimearm.draw()
 
 def update():
     """This method defines what happens *between* screen refreshes
     """
-    # move the alien slightly to the right
-    slimearm.left += 2
-    # if the alien is off the edge of the screen...
-    if slimearm.left > WIDTH:
-        # move the alien to the left edge
-        slimearm.right = 0
+    if "cutscene_manager" not in game_state_dict:
+        game_state_dict["cutscene_manager"] = CutSceneManager()
+    cutscene_manager = game_state_dict["cutscene_manager"]
+
+    if game_state_dict["phase"] == "intro" and cutscene_manager.running_cutscene is None:
+        cutscene_manager.show_cutscene(StupidTextCutScene())
+
+    if cutscene_manager.running_cutscene is not None:
+        cutscene_manager.running_cutscene.update()
+    else:
+        # move the alien slightly to the right
+        slimearm.left += 2
+        # if the alien is off the edge of the screen...
+        if slimearm.left > WIDTH:
+            # move the alien to the left edge
+            slimearm.right = 0
 
 def on_mouse_down(pos):
     """This method defines what happens when you click
